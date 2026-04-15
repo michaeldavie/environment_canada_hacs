@@ -1,5 +1,5 @@
 pytest
 pytest-asyncio
-pytest-homeassistant-custom-component>=2024.11.0
+pytest-homeassistant-custom-component
 syrupy
 env-canada>=0.14.1
