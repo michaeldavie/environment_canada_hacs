@@ -19,10 +19,11 @@ This custom component provides the same functionality as the built-in `environme
 
 ### Via HACS (recommended)
 
-1. Open HACS in your Home Assistant instance.
-2. Go to **Integrations** and click the **+** button.
-3. Search for **Environment Canada** and install it.
-4. Restart Home Assistant.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=michaeldavie&repository=environment_canada_hacs&category=integration)
+
+1. Click the button above, or open HACS in your Home Assistant instance, go to **Integrations**, click **⋮ → Custom repositories**, and add `michaeldavie/environment_canada_hacs` as an Integration.
+2. Search for **Environment Canada** and install it.
+3. Restart Home Assistant.
 
 ### Manual
 
