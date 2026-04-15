@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 import aiohttp
 import pytest
 
+pytestmark = pytest.mark.usefixtures("socket_enabled")
+
 from homeassistant import config_entries
 from custom_components.environment_canada.const import CONF_STATION, DOMAIN
 from homeassistant.const import CONF_LANGUAGE, CONF_LATITUDE, CONF_LONGITUDE
