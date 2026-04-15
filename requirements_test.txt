@@ -3,3 +3,4 @@ pytest-asyncio
 pytest-homeassistant-custom-component
 syrupy
 env-canada>=0.14.1
+PyTurboJPEG
