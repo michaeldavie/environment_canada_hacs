@@ -1,0 +1,12 @@
+{
+  "domain": "environment_canada",
+  "name": "Environment Canada",
+  "codeowners": ["@michaeldavie"],
+  "config_flow": true,
+  "documentation": "https://github.com/michaeldavie/environment_canada_hacs",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "loggers": ["env_canada"],
+  "requirements": ["env-canada>=0.14.1"],
+  "version": "2026.4.0"
+}
