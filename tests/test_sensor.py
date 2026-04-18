@@ -59,7 +59,7 @@ async def test_alert_sensor_no_alerts(
     hass: HomeAssistant,
     ec_data: dict[str, Any],
 ) -> None:
-    """Test combined alert sensor shows 0 and no extra attributes when no alerts are active."""
+    """Test combined alert sensor shows 0 and an empty alerts list when no alerts are active."""
     local_ec_data = copy.deepcopy(ec_data)
     for category in ("advisories", "endings", "statements", "warnings", "watches"):
         local_ec_data["alerts"][category]["value"] = []
@@ -68,7 +68,7 @@ async def test_alert_sensor_no_alerts(
     state = hass.states.get("sensor.home_alerts")
     assert state is not None
     assert state.state == "0"
-    assert "alerts" not in state.attributes
+    assert state.attributes["alerts"] == []
 
 
 async def test_alert_sensor_xml_fallback_fields(
