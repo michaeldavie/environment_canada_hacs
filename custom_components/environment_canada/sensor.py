@@ -331,11 +331,8 @@ class ECAlertSensorEntity(ECBaseSensorEntity[ECWeather]):
         return len(self._alerts)
 
     @property
-    def extra_state_attributes(self) -> dict[str, Any] | None:
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Return the extra state attributes."""
-        if not self._alerts:
-            return None
-
         alerts: list[dict[str, Any]] = []
         for alert in self._alerts:
             alert_attrs: dict[str, Any] = {
