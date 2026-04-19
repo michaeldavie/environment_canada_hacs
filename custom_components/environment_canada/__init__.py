@@ -43,7 +43,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ECConfigEntry) ->
         errors = errors + 1
         _LOGGER.warning("Unable to retrieve Environment Canada weather")
 
-    radar_data = ECMap(coordinates=(lat, lon), layer="precip_type", legend=False)
+    radar_data = ECMap(coordinates=(lat, lon), layer="precip_type", legend=True)
     radar_coordinator = ECDataUpdateCoordinator(
         hass, config_entry, radar_data, "radar", DEFAULT_RADAR_UPDATE_INTERVAL
     )
