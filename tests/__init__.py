@@ -17,7 +17,9 @@ FIXTURE_USER_INPUT = {
 }
 
 
-async def init_integration(hass: HomeAssistant, ec_data) -> MockConfigEntry:
+async def init_integration(
+    hass: HomeAssistant, ec_data, options: dict | None = None
+) -> MockConfigEntry:
     """Set up the Environment Canada integration in Home Assistant."""
 
     def mock_ec():
@@ -29,7 +31,9 @@ async def init_integration(hass: HomeAssistant, ec_data) -> MockConfigEntry:
         ec_mock.update = AsyncMock()
         return ec_mock
 
-    config_entry = MockConfigEntry(domain=DOMAIN, data=FIXTURE_USER_INPUT, title="Home")
+    config_entry = MockConfigEntry(
+        domain=DOMAIN, data=FIXTURE_USER_INPUT, title="Home", options=options or {}
+    )
     config_entry.add_to_hass(hass)
 
     weather_mock = mock_ec()

@@ -12,6 +12,7 @@ This custom component provides the same functionality as the built-in `environme
 
 - **Precip Type radar layer** — shows precipitation type classification in addition to rain and snow layers (from [core PR #161602](https://github.com/home-assistant/core/pull/161602))
 - **Richer alert data** — a single `alerts` sensor replaces the five separate category sensors; each alert exposes title, colour, area, text, status, confidence, impact, and more (from [core PR #164481](https://github.com/home-assistant/core/pull/164481))
+- **Configurable radar camera** — radar type, legend, timestamp, opacity, and map radius are all adjustable from the integration's Configure dialog
 
 ---
 
@@ -85,9 +86,21 @@ Current conditions, daily forecast, and hourly forecast.
 
 ### Radar map (camera)
 
-A loop of radar imagery from the last 3 hours. This entity is **disabled by default** and can be enabled in the integration's settings dialog.
+A loop of radar imagery from the last 3 hours. This entity is **disabled by default** — enable it from the entity's settings dialog.
 
-The default layer is **Precip Type**. The layer can be changed using the `environment_canada.set_radar_type` action (see [Actions](#actions) below).
+The camera is configurable via **Settings → Devices & Services → Environment Canada → Configure**:
+
+| Option | Default | Description |
+|---|---|---|
+| Radar type | Precipitation type | `Rain`, `Snow`, or `Precipitation type` |
+| Show legend | On | Toggle the colour legend overlay |
+| Show timestamp | On | Toggle the timestamp overlay |
+| Radar opacity | 65 | Opacity of the radar layer (0–100) |
+| Map radius | 200 km | Radius of the radar map |
+
+Changes take effect immediately after saving (the integration reloads automatically).
+
+The radar type can also be changed at runtime without a reload using the `environment_canada.set_radar_type` action (see [Actions](#actions) below).
 
 ### Sensors
 
