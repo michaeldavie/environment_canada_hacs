@@ -12,7 +12,8 @@ This custom component provides the same functionality as the built-in `environme
 
 - **Precip Type radar layer** — shows precipitation type classification in addition to rain and snow layers (from [core PR #161602](https://github.com/home-assistant/core/pull/161602))
 - **Richer alert data** — a single `alerts` sensor replaces the five separate category sensors; each alert exposes title, colour, area, text, status, confidence, impact, and more (from [core PR #164481](https://github.com/home-assistant/core/pull/164481))
-- **Configurable radar camera** — radar type, legend, timestamp, opacity, and map radius are all adjustable from the integration's Configure dialog
+- **Configurable radar camera** — radar type, legend, timestamp, opacity, map radius, loop duration, frame rate, and colour scale are all adjustable from the integration's Configure dialog
+- **Smoothed / WebP radar images** — optionally interpolate the radar overlay and serve it as WebP instead of GIF to cut bandwidth (from [core PR #177572](https://github.com/home-assistant/core/pull/177572))
 
 ---
 
@@ -97,6 +98,11 @@ The camera is configurable via **Settings → Devices & Services → Environment
 | Show timestamp | On | Toggle the timestamp overlay |
 | Radar opacity | 65 | Opacity of the radar layer (0–100) |
 | Map radius | 200 km | Radius of the radar map |
+| Loop duration | 0 (full history) | How far back the radar animation goes, in minutes |
+| Loop frame rate | 5 fps | Frame rate of the radar animation |
+| Colour scale | 14 colours | Number of colours in the rain/snow radar scale (no effect on precipitation type) |
+| Smooth radar image | Off | Interpolate the radar overlay instead of leaving it pixelated (uses more bandwidth) |
+| Use WebP images | Off | Serve radar images as WebP instead of GIF to reduce bandwidth, at the cost of higher latency |
 
 Changes take effect immediately after saving (the integration reloads automatically).
 

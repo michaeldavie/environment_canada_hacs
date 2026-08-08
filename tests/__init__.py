@@ -18,7 +18,7 @@ FIXTURE_USER_INPUT = {
 
 
 async def init_integration(
-    hass: HomeAssistant, ec_data, options: dict | None = None
+    hass: HomeAssistant, ec_data, options: dict | None = None, webp: bool = False
 ) -> MockConfigEntry:
     """Set up the Environment Canada integration in Home Assistant."""
 
@@ -50,6 +50,7 @@ async def init_integration(
     radar_mock.layer = "precip_type"
     radar_mock.metadata = {"attribution": "Data provided by Environment Canada"}
     radar_mock.clear_cache = MagicMock()
+    radar_mock.webp = webp
 
     with (
         patch(

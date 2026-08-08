@@ -10,17 +10,27 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (
+    CONF_RADAR_COLORS,
+    CONF_RADAR_DURATION,
+    CONF_RADAR_FPS,
+    CONF_RADAR_INTERPOLATION,
     CONF_RADAR_LAYER,
     CONF_RADAR_LEGEND,
     CONF_RADAR_OPACITY,
     CONF_RADAR_RADIUS,
     CONF_RADAR_TIMESTAMP,
+    CONF_RADAR_WEBP,
     CONF_STATION,
+    DEFAULT_RADAR_COLORS,
+    DEFAULT_RADAR_DURATION,
+    DEFAULT_RADAR_FPS,
+    DEFAULT_RADAR_INTERPOLATION,
     DEFAULT_RADAR_LAYER,
     DEFAULT_RADAR_LEGEND,
     DEFAULT_RADAR_OPACITY,
     DEFAULT_RADAR_RADIUS,
     DEFAULT_RADAR_TIMESTAMP,
+    DEFAULT_RADAR_WEBP,
 )
 from .coordinator import ECConfigEntry, ECDataUpdateCoordinator, ECRuntimeData
 
@@ -63,6 +73,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ECConfigEntry) ->
         timestamp=opts.get(CONF_RADAR_TIMESTAMP, DEFAULT_RADAR_TIMESTAMP),
         layer_opacity=int(opts.get(CONF_RADAR_OPACITY, DEFAULT_RADAR_OPACITY)),
         radius=int(opts.get(CONF_RADAR_RADIUS, DEFAULT_RADAR_RADIUS)),
+        loop_minutes=int(opts.get(CONF_RADAR_DURATION, DEFAULT_RADAR_DURATION)),
+        fps=int(opts.get(CONF_RADAR_FPS, DEFAULT_RADAR_FPS)),
+        colors=int(opts.get(CONF_RADAR_COLORS, DEFAULT_RADAR_COLORS)),
+        interpolation=opts.get(CONF_RADAR_INTERPOLATION, DEFAULT_RADAR_INTERPOLATION),
+        webp=opts.get(CONF_RADAR_WEBP, DEFAULT_RADAR_WEBP),
     )
     radar_coordinator = ECDataUpdateCoordinator(
         hass, config_entry, radar_data, "radar", DEFAULT_RADAR_UPDATE_INTERVAL

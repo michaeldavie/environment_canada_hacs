@@ -32,11 +32,21 @@
           "radar_legend": "Show legend",
           "radar_timestamp": "Show timestamp",
           "radar_opacity": "Radar opacity",
-          "radar_radius": "Map radius"
+          "radar_radius": "Map radius",
+          "radar_duration": "Loop duration",
+          "radar_fps": "Loop frame rate",
+          "radar_colors": "Colour scale",
+          "radar_interpolation": "Smooth radar image",
+          "radar_webp": "Use WebP images"
         },
         "data_description": {
           "radar_opacity": "Opacity of the radar layer overlay (0–100)",
-          "radar_radius": "Radius of the radar map in kilometres"
+          "radar_radius": "Radius of the radar map in kilometres",
+          "radar_duration": "How far back the radar animation goes, in minutes (0 for the full available history)",
+          "radar_fps": "Frame rate of the radar animation",
+          "radar_colors": "Number of colours in the rain/snow radar scale (has no effect on the precipitation type layer)",
+          "radar_interpolation": "Smooth the radar image instead of leaving it pixelated (uses more bandwidth)",
+          "radar_webp": "Request radar images as WebP instead of PNG to reduce bandwidth, at the cost of higher latency"
         }
       }
     }
@@ -47,6 +57,12 @@
         "rain": "Rain",
         "snow": "Snow",
         "precip_type": "Precipitation type"
+      }
+    },
+    "radar_colors": {
+      "options": {
+        "8": "8 colours",
+        "14": "14 colours"
       }
     }
   },

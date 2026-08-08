@@ -4,16 +4,26 @@ from typing import Any
 from unittest.mock import patch
 
 from custom_components.environment_canada.const import (
+    CONF_RADAR_COLORS,
+    CONF_RADAR_DURATION,
+    CONF_RADAR_FPS,
+    CONF_RADAR_INTERPOLATION,
     CONF_RADAR_LAYER,
     CONF_RADAR_LEGEND,
     CONF_RADAR_OPACITY,
     CONF_RADAR_RADIUS,
     CONF_RADAR_TIMESTAMP,
+    CONF_RADAR_WEBP,
+    DEFAULT_RADAR_COLORS,
+    DEFAULT_RADAR_DURATION,
+    DEFAULT_RADAR_FPS,
+    DEFAULT_RADAR_INTERPOLATION,
     DEFAULT_RADAR_LAYER,
     DEFAULT_RADAR_LEGEND,
     DEFAULT_RADAR_OPACITY,
     DEFAULT_RADAR_RADIUS,
     DEFAULT_RADAR_TIMESTAMP,
+    DEFAULT_RADAR_WEBP,
     DOMAIN,
 )
 from homeassistant.core import HomeAssistant
@@ -39,6 +49,11 @@ async def test_options_flow_shows_defaults(
     assert CONF_RADAR_TIMESTAMP in schema_keys
     assert CONF_RADAR_OPACITY in schema_keys
     assert CONF_RADAR_RADIUS in schema_keys
+    assert CONF_RADAR_DURATION in schema_keys
+    assert CONF_RADAR_FPS in schema_keys
+    assert CONF_RADAR_COLORS in schema_keys
+    assert CONF_RADAR_INTERPOLATION in schema_keys
+    assert CONF_RADAR_WEBP in schema_keys
 
 
 async def test_options_flow_saves_options(
@@ -56,6 +71,11 @@ async def test_options_flow_saves_options(
         CONF_RADAR_TIMESTAMP: False,
         CONF_RADAR_OPACITY: 30,
         CONF_RADAR_RADIUS: 100,
+        CONF_RADAR_DURATION: 30,
+        CONF_RADAR_FPS: 10,
+        CONF_RADAR_COLORS: "8",
+        CONF_RADAR_INTERPOLATION: True,
+        CONF_RADAR_WEBP: True,
     }
     with patch(
         "custom_components.environment_canada.async_setup_entry", return_value=True
@@ -78,6 +98,11 @@ async def test_options_flow_uses_existing_options_as_defaults(
         CONF_RADAR_TIMESTAMP: True,
         CONF_RADAR_OPACITY: 50,
         CONF_RADAR_RADIUS: 300,
+        CONF_RADAR_DURATION: 60,
+        CONF_RADAR_FPS: 15,
+        CONF_RADAR_COLORS: "8",
+        CONF_RADAR_INTERPOLATION: True,
+        CONF_RADAR_WEBP: True,
     }
     config_entry = await init_integration(hass, ec_data, options=saved_options)
 
@@ -91,6 +116,11 @@ async def test_options_flow_uses_existing_options_as_defaults(
     assert defaults[CONF_RADAR_LEGEND] is False
     assert defaults[CONF_RADAR_OPACITY] == 50
     assert defaults[CONF_RADAR_RADIUS] == 300
+    assert defaults[CONF_RADAR_DURATION] == 60
+    assert defaults[CONF_RADAR_FPS] == 15
+    assert defaults[CONF_RADAR_COLORS] == "8"
+    assert defaults[CONF_RADAR_INTERPOLATION] is True
+    assert defaults[CONF_RADAR_WEBP] is True
 
 
 async def _setup_entry_with_options(
@@ -163,6 +193,11 @@ async def test_ecmap_created_with_options(
         CONF_RADAR_TIMESTAMP: False,
         CONF_RADAR_OPACITY: 40,
         CONF_RADAR_RADIUS: 150,
+        CONF_RADAR_DURATION: 30,
+        CONF_RADAR_FPS: 10,
+        CONF_RADAR_COLORS: "8",
+        CONF_RADAR_INTERPOLATION: True,
+        CONF_RADAR_WEBP: True,
     }
 
     mock_ecmap = await _setup_entry_with_options(hass, ec_data, options)
@@ -174,6 +209,11 @@ async def test_ecmap_created_with_options(
     assert call_kwargs["timestamp"] is False
     assert call_kwargs["layer_opacity"] == 40
     assert call_kwargs["radius"] == 150
+    assert call_kwargs["loop_minutes"] == 30
+    assert call_kwargs["fps"] == 10
+    assert call_kwargs["colors"] == 8
+    assert call_kwargs["interpolation"] is True
+    assert call_kwargs["webp"] is True
 
 
 async def test_ecmap_created_with_defaults_when_no_options(
@@ -189,3 +229,8 @@ async def test_ecmap_created_with_defaults_when_no_options(
     assert call_kwargs["timestamp"] == DEFAULT_RADAR_TIMESTAMP
     assert call_kwargs["layer_opacity"] == DEFAULT_RADAR_OPACITY
     assert call_kwargs["radius"] == DEFAULT_RADAR_RADIUS
+    assert call_kwargs["loop_minutes"] == DEFAULT_RADAR_DURATION
+    assert call_kwargs["fps"] == DEFAULT_RADAR_FPS
+    assert call_kwargs["colors"] == int(DEFAULT_RADAR_COLORS)
+    assert call_kwargs["interpolation"] == DEFAULT_RADAR_INTERPOLATION
+    assert call_kwargs["webp"] == DEFAULT_RADAR_WEBP

@@ -10,6 +10,7 @@ from custom_components.environment_canada.camera import SERVICE_SET_RADAR_TYPE
 from custom_components.environment_canada.const import DOMAIN
 from homeassistant.core import HomeAssistant
 from homeassistant.util.dt import UTC
+from pytest_homeassistant_custom_component.typing import ClientSessionGenerator
 
 from . import init_integration
 
@@ -21,6 +22,30 @@ async def test_camera_entity(hass: HomeAssistant, ec_data: dict[str, Any]) -> No
     state = hass.states.get("camera.home_radar")
     # Camera is disabled by default, so state should be None
     assert state is None
+
+
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
+@pytest.mark.parametrize(
+    ("webp", "expected_content_type"),
+    [
+        (False, "image/gif"),
+        (True, "image/webp"),
+    ],
+)
+async def test_camera_content_type(
+    hass: HomeAssistant,
+    hass_client: ClientSessionGenerator,
+    ec_data: dict[str, Any],
+    webp: bool,
+    expected_content_type: str,
+) -> None:
+    """Test the camera's content type matches the radar object's webp setting."""
+    await init_integration(hass, ec_data, webp=webp)
+
+    client = await hass_client()
+    resp = await client.get("/api/camera_proxy/camera.home_radar")
+
+    assert resp.content_type == expected_content_type
 
 
 @pytest.mark.usefixtures("entity_registry_enabled_by_default")
