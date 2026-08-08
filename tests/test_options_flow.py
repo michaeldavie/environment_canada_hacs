@@ -7,6 +7,7 @@ from custom_components.environment_canada.const import (
     CONF_RADAR_COLORS,
     CONF_RADAR_DURATION,
     CONF_RADAR_FPS,
+    CONF_RADAR_FUTURE_MINUTES,
     CONF_RADAR_INTERPOLATION,
     CONF_RADAR_LAYER,
     CONF_RADAR_LEGEND,
@@ -17,6 +18,7 @@ from custom_components.environment_canada.const import (
     DEFAULT_RADAR_COLORS,
     DEFAULT_RADAR_DURATION,
     DEFAULT_RADAR_FPS,
+    DEFAULT_RADAR_FUTURE_MINUTES,
     DEFAULT_RADAR_INTERPOLATION,
     DEFAULT_RADAR_LAYER,
     DEFAULT_RADAR_LEGEND,
@@ -25,11 +27,35 @@ from custom_components.environment_canada.const import (
     DEFAULT_RADAR_TIMESTAMP,
     DEFAULT_RADAR_WEBP,
     DOMAIN,
+    SECTION_IMAGE,
+    SECTION_MAP,
+    SECTION_RADAR,
+    SECTION_TIME,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
 from . import init_integration
+
+
+def _section_field_names(data_schema, section_key: str) -> set[str]:
+    """Return the field names nested inside a given section of a data schema."""
+    for key, value in data_schema.schema.items():
+        if str(key) == section_key:
+            return {str(inner_key) for inner_key in value.schema.schema}
+    raise KeyError(section_key)
+
+
+def _section_defaults(data_schema, section_key: str) -> dict[str, Any]:
+    """Return the default values nested inside a given section of a data schema."""
+    for key, value in data_schema.schema.items():
+        if str(key) == section_key:
+            return {
+                str(inner_key): inner_key.default()
+                for inner_key in value.schema.schema
+                if hasattr(inner_key, "default")
+            }
+    raise KeyError(section_key)
 
 
 async def test_options_flow_shows_defaults(
@@ -43,55 +69,87 @@ async def test_options_flow_shows_defaults(
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "init"
 
-    schema_keys = {str(k) for k in result["data_schema"].schema}
-    assert CONF_RADAR_LAYER in schema_keys
-    assert CONF_RADAR_LEGEND in schema_keys
-    assert CONF_RADAR_TIMESTAMP in schema_keys
-    assert CONF_RADAR_OPACITY in schema_keys
-    assert CONF_RADAR_RADIUS in schema_keys
-    assert CONF_RADAR_DURATION in schema_keys
-    assert CONF_RADAR_FPS in schema_keys
-    assert CONF_RADAR_COLORS in schema_keys
-    assert CONF_RADAR_INTERPOLATION in schema_keys
-    assert CONF_RADAR_WEBP in schema_keys
+    data_schema = result["data_schema"]
+    assert {str(k) for k in data_schema.schema} == {
+        SECTION_MAP,
+        SECTION_RADAR,
+        SECTION_TIME,
+        SECTION_IMAGE,
+    }
+    assert _section_field_names(data_schema, SECTION_MAP) == {CONF_RADAR_RADIUS}
+    assert _section_field_names(data_schema, SECTION_RADAR) == {
+        CONF_RADAR_LAYER,
+        CONF_RADAR_COLORS,
+        CONF_RADAR_OPACITY,
+        CONF_RADAR_LEGEND,
+    }
+    assert _section_field_names(data_schema, SECTION_TIME) == {
+        CONF_RADAR_DURATION,
+        CONF_RADAR_FUTURE_MINUTES,
+        CONF_RADAR_TIMESTAMP,
+    }
+    assert _section_field_names(data_schema, SECTION_IMAGE) == {
+        CONF_RADAR_INTERPOLATION,
+        CONF_RADAR_FPS,
+        CONF_RADAR_WEBP,
+    }
 
 
 async def test_options_flow_saves_options(
     hass: HomeAssistant, ec_data: dict[str, Any]
 ) -> None:
-    """Test that submitting options saves them to config_entry.options."""
+    """Test that submitting options saves them, flattened, to config_entry.options."""
     config_entry = await init_integration(hass, ec_data)
 
     result = await hass.config_entries.options.async_init(config_entry.entry_id)
     assert result["type"] is FlowResultType.FORM
 
-    new_options = {
-        CONF_RADAR_LAYER: "rain",
-        CONF_RADAR_LEGEND: False,
-        CONF_RADAR_TIMESTAMP: False,
-        CONF_RADAR_OPACITY: 30,
-        CONF_RADAR_RADIUS: 100,
-        CONF_RADAR_DURATION: 30,
-        CONF_RADAR_FPS: 10,
-        CONF_RADAR_COLORS: "8",
-        CONF_RADAR_INTERPOLATION: True,
-        CONF_RADAR_WEBP: True,
+    submitted = {
+        SECTION_MAP: {CONF_RADAR_RADIUS: 100},
+        SECTION_RADAR: {
+            CONF_RADAR_LAYER: "rain",
+            CONF_RADAR_COLORS: "8",
+            CONF_RADAR_OPACITY: 30,
+            CONF_RADAR_LEGEND: False,
+        },
+        SECTION_TIME: {
+            CONF_RADAR_DURATION: 30,
+            CONF_RADAR_FUTURE_MINUTES: 15,
+            CONF_RADAR_TIMESTAMP: False,
+        },
+        SECTION_IMAGE: {
+            CONF_RADAR_INTERPOLATION: True,
+            CONF_RADAR_FPS: 10,
+            CONF_RADAR_WEBP: True,
+        },
     }
     with patch(
         "custom_components.environment_canada.async_setup_entry", return_value=True
     ):
         result = await hass.config_entries.options.async_configure(
-            result["flow_id"], new_options
+            result["flow_id"], submitted
         )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert config_entry.options == new_options
+    assert config_entry.options == {
+        CONF_RADAR_RADIUS: 100,
+        CONF_RADAR_LAYER: "rain",
+        CONF_RADAR_COLORS: "8",
+        CONF_RADAR_OPACITY: 30,
+        CONF_RADAR_LEGEND: False,
+        CONF_RADAR_DURATION: 30,
+        CONF_RADAR_FUTURE_MINUTES: 15,
+        CONF_RADAR_TIMESTAMP: False,
+        CONF_RADAR_INTERPOLATION: True,
+        CONF_RADAR_FPS: 10,
+        CONF_RADAR_WEBP: True,
+    }
 
 
 async def test_options_flow_uses_existing_options_as_defaults(
     hass: HomeAssistant, ec_data: dict[str, Any]
 ) -> None:
-    """Test options flow pre-fills with previously saved option values."""
+    """Test options flow pre-fills with previously saved (flat) option values."""
     saved_options = {
         CONF_RADAR_LAYER: "snow",
         CONF_RADAR_LEGEND: False,
@@ -103,24 +161,30 @@ async def test_options_flow_uses_existing_options_as_defaults(
         CONF_RADAR_COLORS: "8",
         CONF_RADAR_INTERPOLATION: True,
         CONF_RADAR_WEBP: True,
+        CONF_RADAR_FUTURE_MINUTES: 30,
     }
     config_entry = await init_integration(hass, ec_data, options=saved_options)
 
     result = await hass.config_entries.options.async_init(config_entry.entry_id)
     assert result["type"] is FlowResultType.FORM
 
-    schema = result["data_schema"].schema
-    defaults = {str(k): k.default() for k in schema if hasattr(k, "default")}
+    data_schema = result["data_schema"]
+    map_defaults = _section_defaults(data_schema, SECTION_MAP)
+    radar_defaults = _section_defaults(data_schema, SECTION_RADAR)
+    time_defaults = _section_defaults(data_schema, SECTION_TIME)
+    image_defaults = _section_defaults(data_schema, SECTION_IMAGE)
 
-    assert defaults[CONF_RADAR_LAYER] == "snow"
-    assert defaults[CONF_RADAR_LEGEND] is False
-    assert defaults[CONF_RADAR_OPACITY] == 50
-    assert defaults[CONF_RADAR_RADIUS] == 300
-    assert defaults[CONF_RADAR_DURATION] == 60
-    assert defaults[CONF_RADAR_FPS] == 15
-    assert defaults[CONF_RADAR_COLORS] == "8"
-    assert defaults[CONF_RADAR_INTERPOLATION] is True
-    assert defaults[CONF_RADAR_WEBP] is True
+    assert map_defaults[CONF_RADAR_RADIUS] == 300
+    assert radar_defaults[CONF_RADAR_LAYER] == "snow"
+    assert radar_defaults[CONF_RADAR_LEGEND] is False
+    assert radar_defaults[CONF_RADAR_OPACITY] == 50
+    assert radar_defaults[CONF_RADAR_COLORS] == "8"
+    assert time_defaults[CONF_RADAR_DURATION] == 60
+    assert time_defaults[CONF_RADAR_FUTURE_MINUTES] == 30
+    assert time_defaults[CONF_RADAR_TIMESTAMP] is True
+    assert image_defaults[CONF_RADAR_INTERPOLATION] is True
+    assert image_defaults[CONF_RADAR_FPS] == 15
+    assert image_defaults[CONF_RADAR_WEBP] is True
 
 
 async def _setup_entry_with_options(
@@ -198,6 +262,7 @@ async def test_ecmap_created_with_options(
         CONF_RADAR_COLORS: "8",
         CONF_RADAR_INTERPOLATION: True,
         CONF_RADAR_WEBP: True,
+        CONF_RADAR_FUTURE_MINUTES: 20,
     }
 
     mock_ecmap = await _setup_entry_with_options(hass, ec_data, options)
@@ -214,6 +279,7 @@ async def test_ecmap_created_with_options(
     assert call_kwargs["colors"] == 8
     assert call_kwargs["interpolation"] is True
     assert call_kwargs["webp"] is True
+    assert call_kwargs["future_minutes"] == 20
 
 
 async def test_ecmap_created_with_defaults_when_no_options(
@@ -234,3 +300,4 @@ async def test_ecmap_created_with_defaults_when_no_options(
     assert call_kwargs["colors"] == int(DEFAULT_RADAR_COLORS)
     assert call_kwargs["interpolation"] == DEFAULT_RADAR_INTERPOLATION
     assert call_kwargs["webp"] == DEFAULT_RADAR_WEBP
+    assert call_kwargs["future_minutes"] == DEFAULT_RADAR_FUTURE_MINUTES

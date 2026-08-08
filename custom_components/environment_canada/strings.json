@@ -27,26 +27,54 @@
     "step": {
       "init": {
         "title": "Radar camera options",
-        "data": {
-          "radar_layer": "Radar type",
-          "radar_legend": "Show legend",
-          "radar_timestamp": "Show timestamp",
-          "radar_opacity": "Radar opacity",
-          "radar_radius": "Map radius",
-          "radar_duration": "Loop duration",
-          "radar_fps": "Loop frame rate",
-          "radar_colors": "Colour scale",
-          "radar_interpolation": "Smooth radar image",
-          "radar_webp": "Use WebP images"
-        },
-        "data_description": {
-          "radar_opacity": "Opacity of the radar layer overlay (0–100)",
-          "radar_radius": "Radius of the radar map in kilometres",
-          "radar_duration": "How far back the radar animation goes, in minutes (0 for the full available history)",
-          "radar_fps": "Frame rate of the radar animation",
-          "radar_colors": "Number of colours in the rain/snow radar scale (has no effect on the precipitation type layer)",
-          "radar_interpolation": "Smooth the radar image instead of leaving it pixelated (uses more bandwidth)",
-          "radar_webp": "Request radar images as WebP instead of PNG to reduce bandwidth, at the cost of higher latency"
+        "sections": {
+          "map": {
+            "name": "Map",
+            "data": {
+              "radar_radius": "Map radius"
+            },
+            "data_description": {
+              "radar_radius": "Radius of the radar map in kilometres"
+            }
+          },
+          "radar": {
+            "name": "Radar",
+            "data": {
+              "radar_layer": "Radar type",
+              "radar_colors": "Colour scale",
+              "radar_opacity": "Radar opacity",
+              "radar_legend": "Show legend"
+            },
+            "data_description": {
+              "radar_colors": "Number of colours in the rain/snow radar scale (has no effect on the precipitation type layer)",
+              "radar_opacity": "Opacity of the radar layer overlay (0–100)"
+            }
+          },
+          "time": {
+            "name": "Time",
+            "data": {
+              "radar_duration": "Past minutes",
+              "radar_future_minutes": "Future minutes",
+              "radar_timestamp": "Show timestamp"
+            },
+            "data_description": {
+              "radar_duration": "How far back the radar animation goes, in minutes (0 for the full available history)",
+              "radar_future_minutes": "Extend the radar loop past now using Environment Canada's short-term forecast (nowcast) layer, in minutes (up to 72, the limit of the available data). Only affects Rain and Snow; no effect on Precipitation type"
+            }
+          },
+          "image": {
+            "name": "Image",
+            "data": {
+              "radar_interpolation": "Smooth radar image",
+              "radar_fps": "Loop frame rate",
+              "radar_webp": "Use WebP images"
+            },
+            "data_description": {
+              "radar_interpolation": "Smooth the radar image instead of leaving it pixelated (uses more bandwidth)",
+              "radar_fps": "Frame rate of the radar animation",
+              "radar_webp": "Request radar images as WebP instead of PNG to reduce bandwidth, at the cost of higher latency"
+            }
+          }
         }
       }
     }

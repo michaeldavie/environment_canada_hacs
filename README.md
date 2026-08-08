@@ -14,6 +14,7 @@ This custom component provides the same functionality as the built-in `environme
 - **Richer alert data** — a single `alerts` sensor replaces the five separate category sensors; each alert exposes title, colour, area, text, status, confidence, impact, and more (from [core PR #164481](https://github.com/home-assistant/core/pull/164481))
 - **Configurable radar camera** — radar type, legend, timestamp, opacity, map radius, loop duration, frame rate, and colour scale are all adjustable from the integration's Configure dialog
 - **Smoothed / WebP radar images** — optionally interpolate the radar overlay and serve it as WebP instead of GIF to cut bandwidth (from [core PR #177572](https://github.com/home-assistant/core/pull/177572))
+- **Radar loop forecast extension** — optionally extend the radar loop past "now" with short-term forecast (nowcast) frames for the Rain and Snow layers, using [env_canada 0.19.0](https://github.com/michaeldavie/env_canada/blob/main/CHANGELOG.md#v0190)'s `future_minutes` support (not yet proposed to core)
 
 ---
 
@@ -89,19 +90,37 @@ Current conditions, daily forecast, and hourly forecast.
 
 A loop of radar imagery from the last 3 hours. This entity is **disabled by default** — enable it from the entity's settings dialog.
 
-The camera is configurable via **Settings → Devices & Services → Environment Canada → Configure**:
+The camera is configurable via **Settings → Devices & Services → Environment Canada → Configure**, grouped into four sections:
+
+**Map**
+
+| Option | Default | Description |
+|---|---|---|
+| Map radius | 200 km | Radius of the radar map |
+
+**Radar**
 
 | Option | Default | Description |
 |---|---|---|
 | Radar type | Precipitation type | `Rain`, `Snow`, or `Precipitation type` |
-| Show legend | On | Toggle the colour legend overlay |
-| Show timestamp | On | Toggle the timestamp overlay |
-| Radar opacity | 65 | Opacity of the radar layer (0–100) |
-| Map radius | 200 km | Radius of the radar map |
-| Loop duration | 0 (full history) | How far back the radar animation goes, in minutes |
-| Loop frame rate | 5 fps | Frame rate of the radar animation |
 | Colour scale | 14 colours | Number of colours in the rain/snow radar scale (no effect on precipitation type) |
+| Radar opacity | 65 | Opacity of the radar layer (0–100) |
+| Show legend | On | Toggle the colour legend overlay |
+
+**Time**
+
+| Option | Default | Description |
+|---|---|---|
+| Past minutes | 0 (full history) | How far back the radar animation goes, in minutes |
+| Future minutes | 0 | Extend the loop past now with short-term forecast (nowcast) frames, in minutes (max 72, the limit of the available data). Rain/Snow only — no effect on Precipitation type |
+| Show timestamp | On | Toggle the timestamp overlay |
+
+**Image** (collapsed by default)
+
+| Option | Default | Description |
+|---|---|---|
 | Smooth radar image | Off | Interpolate the radar overlay instead of leaving it pixelated (uses more bandwidth) |
+| Loop frame rate | 5 fps | Frame rate of the radar animation |
 | Use WebP images | Off | Serve radar images as WebP instead of GIF to reduce bandwidth, at the cost of higher latency |
 
 Changes take effect immediately after saving (the integration reloads automatically).
